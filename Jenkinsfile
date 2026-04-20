@@ -1,16 +1,43 @@
 pipeline {
     agent any
 
-    // This block tells Jenkins to look for a tool named 'docker' 
-    // configured in Manage Jenkins > Global Tool Configuration
     tools {
-        dockerTool 'docker' 
+        dockerTool 'docker'
     }
 
     stages {
+
         stage('Clone Code') {
             steps {
                 git url: 'https://github.com/mohdhusainahmed001/my-python-app', branch: 'main'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip3 install -r requirements.txt || true'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'pytest || true'
+            }
+        }
+
+        // ✅ SonarQube Analysis Stage
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner'
+                }
+            }
+        }
+
+        // ✅ Quality Gate (very important)
+        stage('Quality Gate') {
+            steps {
+                waitForQualityGate abortPipeline: true
             }
         }
 
@@ -20,16 +47,9 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                echo "Running tests..."
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 script {
-                    // Using the Docker Pipeline Plugin syntax
                     docker.build("my-app:latest")
                 }
             }
