@@ -41,9 +41,8 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Artifact') {
             steps {
-                // Example: package your app into a zip
                 sh 'zip -r demo-app.zip .'
             }
         }
@@ -62,13 +61,28 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'echo "Docker build placeholder"'
+                script {
+                    def imageName = "mohdhusainahmed001/my-python-app:${BUILD_NUMBER}"
+                    sh "docker build -t ${imageName} ."
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        def imageName = "mohdhusainahmed001/my-python-app:${BUILD_NUMBER}"
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        sh "docker push ${imageName}"
+                    }
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                sh 'echo "Deploy stage placeholder"'
+                sh 'echo "Deploy stage placeholder - replace with kubectl/helm/ansible commands"'
             }
         }
     }
