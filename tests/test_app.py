@@ -4,5 +4,5 @@ def test_home():
     client = app.test_client()
     response = client.get("/")
     assert response.status_code == 200
-    assert b"Hello, CI/CD Pipeline with Python!" in response.data
+    assert b"Hello sir!, Welcome to onextel!" in response.data
 
