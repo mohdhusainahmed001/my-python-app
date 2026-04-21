@@ -23,8 +23,8 @@ pipeline {
 
         stage('Test') {
             steps {
-                // Run tests
-                sh 'pytest'
+                // Run tests with PYTHONPATH set to workspace root
+                sh 'PYTHONPATH=. pytest'
             }
         }
 
