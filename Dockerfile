@@ -1,9 +1,11 @@
-# Start from a lightweight Python image
 FROM python:3.10-slim
 
-# Install required tools: git, curl, unzip, sonar-scanner
+# Switch to root automatically
+USER root
+
+# Install required tools
 RUN apt-get update && \
-    apt-get install -y git curl unzip openjdk-17-jre && \
+    apt-get install -y wget curl unzip git openjdk-17-jre && \
     rm -rf /var/lib/apt/lists/*
 
 # Install SonarScanner
@@ -13,13 +15,10 @@ RUN curl -sSLo /tmp/sonar-scanner.zip \
     ln -s /opt/sonar-scanner-*/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
     rm /tmp/sonar-scanner.zip
 
-# Upgrade pip and install pytest globally
+# Install Python dependencies
 RUN pip install --upgrade pip && \
     pip install pytest
 
-# Set working directory
 WORKDIR /workspace
-
-# Default command
 CMD ["bash"]
 
