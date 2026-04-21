@@ -3,9 +3,9 @@ FROM python:3.10-bullseye
 # Switch to root automatically
 USER root
 
-# Install required tools
+# Install required tools (Java 17, git, curl, unzip, wget)
 RUN apt-get update && \
-    apt-get install -y wget curl unzip git openjdk-17-headless && \
+    apt-get install -y wget curl unzip git openjdk-17-jdk-headless && \
     rm -rf /var/lib/apt/lists/*
 
 # Install SonarScanner
@@ -15,10 +15,13 @@ RUN curl -sSLo /tmp/sonar-scanner.zip \
     ln -s /opt/sonar-scanner-*/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
     rm /tmp/sonar-scanner.zip
 
-# Install Python dependencies
+# Upgrade pip and install pytest globally
 RUN pip install --upgrade pip && \
     pip install pytest
 
+# Set working directory
 WORKDIR /workspace
+
+# Default command
 CMD ["bash"]
 
