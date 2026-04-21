@@ -1,7 +1,6 @@
 pipeline {
     agent {
         docker {
-            // Use the image from DockerHub
             image 'mohdhusainahmed001/my-jenkins-agent:latest'
             args '-u root'
         }
@@ -16,21 +15,18 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                // Install project dependencies
                 sh 'pip install -r requirements.txt'
             }
         }
 
         stage('Test') {
             steps {
-                // Run tests with PYTHONPATH set to workspace root
                 sh 'PYTHONPATH=. pytest'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                // Ensure the SonarQube server name matches your Jenkins global configuration
                 withSonarQubeEnv('SonarQube') {
                     sh 'sonar-scanner'
                 }
@@ -47,7 +43,20 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'echo "Build stage placeholder"'
+                // Example: package your app into a zip
+                sh 'zip -r demo-app.zip .'
+            }
+        }
+
+        stage('Upload to Nexus') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'nexus-creds', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                    sh '''
+                        curl -v -u $NEXUS_USER:$NEXUS_PASS \
+                        --upload-file demo-app.zip \
+                        http://<NEXUS_HOST>:8081/repository/my-generic-repo/demo-app/demo-app-${BUILD_NUMBER}.zip
+                    '''
+                }
             }
         }
 
