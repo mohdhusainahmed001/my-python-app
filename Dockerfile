@@ -1,22 +1,25 @@
-# Use an official Python runtime as a parent image
-FROM python:3.11-slim
+# Start from a lightweight Python image
+FROM python:3.10-slim
 
-# Set the working directory in the container
-WORKDIR /app
+# Install required tools: git, curl, unzip, sonar-scanner
+RUN apt-get update && \
+    apt-get install -y git curl unzip openjdk-17-jre && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file into the container
-# Copying this first allows Docker to cache the installed packages
-COPY requirements.txt .
+# Install SonarScanner
+RUN curl -sSLo /tmp/sonar-scanner.zip \
+    https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip && \
+    unzip /tmp/sonar-scanner.zip -d /opt && \
+    ln -s /opt/sonar-scanner-*/bin/sonar-scanner /usr/local/bin/sonar-scanner && \
+    rm /tmp/sonar-scanner.zip
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Upgrade pip and install pytest globally
+RUN pip install --upgrade pip && \
+    pip install pytest
 
-# Copy the rest of your application code into the container
-COPY . .
+# Set working directory
+WORKDIR /workspace
 
-# Expose the port your app runs on (change 8000 if your app uses a different port)
-EXPOSE 8000
+# Default command
+CMD ["bash"]
 
-# Define the command to run your app
-# Replace 'app.py' with your actual starting script name
-CMD ["python", "app.py"]

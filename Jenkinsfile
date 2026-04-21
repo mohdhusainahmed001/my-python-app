@@ -1,31 +1,26 @@
 pipeline {
-    agent any
-
-    tools {
-        dockerTool 'docker'
+    agent {
+        docker {
+            image 'my-jenkins-agent:latest'
+            args '-u root'
+        }
     }
-
     stages {
-
-        stage('Clone Code') {
+        stage('Checkout') {
             steps {
-                git url: 'https://github.com/mohdhusainahmed001/my-python-app', branch: 'main'
+                git branch: 'main', url: 'https://github.com/mohdhusainahmed001/my-python-app'
             }
         }
-
         stage('Install Dependencies') {
             steps {
-                sh 'pip3 install -r requirements.txt || true'
+                sh 'pip install -r requirements.txt'
             }
         }
-
         stage('Test') {
             steps {
-                sh 'pytest || true'
+                sh 'pytest'
             }
         }
-
-        // ✅ SonarQube Analysis Stage
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
@@ -33,32 +28,13 @@ pipeline {
                 }
             }
         }
-
-        // ✅ Quality Gate (very important)
         stage('Quality Gate') {
             steps {
-                waitForQualityGate abortPipeline: true
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo "Building application..."
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                script {
-                    docker.build("my-app:latest")
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
                 }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo "Deploying application..."
             }
         }
     }
 }
+
