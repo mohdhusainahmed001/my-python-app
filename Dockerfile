@@ -1,11 +1,11 @@
-FROM python:3.10-slim
+FROM python:3.10-bullseye
 
 # Switch to root automatically
 USER root
 
 # Install required tools
 RUN apt-get update && \
-    apt-get install -y wget curl unzip git openjdk-17-jre && \
+    apt-get install -y wget curl unzip git openjdk-17-headless && \
     rm -rf /var/lib/apt/lists/*
 
 # Install SonarScanner
