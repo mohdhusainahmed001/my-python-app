@@ -8,6 +8,6 @@
         mode: replicated
         replicas: "{{ replicas | default(2) }}"
         publish:
-          - published_port: 8080
-            target_port: 8080
+          - published_port: 5000   # host port
+            target_port: 8080      # container port
 
