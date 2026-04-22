@@ -1,0 +1,14 @@
+- hosts: managers
+  become: yes
+  tasks:
+    - name: Deploy my-python-app service
+      community.docker.docker_swarm_service:
+        name: my-python-app
+        image: mohdhusainahmed001/my-python-app:{{ build_number }}
+        state: present
+        mode: replicated
+        replicas: 2
+        publish:
+          - published_port: 8080
+            target_port: 8080
+
