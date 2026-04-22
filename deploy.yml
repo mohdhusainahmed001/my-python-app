@@ -1,5 +1,5 @@
 - hosts: managers
-  become: yes
+###  become: yes
   tasks:
     - name: Deploy my-python-app service
       community.docker.docker_swarm_service:

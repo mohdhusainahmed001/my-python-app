@@ -32,9 +32,12 @@ RUN curl -sSLo /usr/local/bin/kubectl \
     https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl && \
     chmod +x /usr/local/bin/kubectl
 
-# Upgrade pip and install testing tools
+# Upgrade pip and install testing tools + Docker SDK for Python
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir pytest
+    pip install --no-cache-dir pytest docker
+
+# Pre-install Ansible Docker collection
+RUN ansible-galaxy collection install community.docker
 
 # Set working directory
 WORKDIR /workspace
