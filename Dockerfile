@@ -1,4 +1,4 @@
-FROM python:3.10-bullseye
+FROM python:3.10-bookworm
 
 # Switch to root
 USER root
@@ -18,6 +18,7 @@ RUN apt-get update && \
     gnupg \
     lsb-release \
     ansible \
+    python3-docker \
     && rm -rf /var/lib/apt/lists/*
 
 # Install SonarScanner
@@ -32,9 +33,9 @@ RUN curl -sSLo /usr/local/bin/kubectl \
     https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl && \
     chmod +x /usr/local/bin/kubectl
 
-# Upgrade pip and install testing tools + Docker SDK for Python
+# Upgrade pip and install testing tools
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir pytest docker
+    pip install --no-cache-dir pytest
 
 # Pre-install Ansible Docker collection
 RUN ansible-galaxy collection install community.docker
