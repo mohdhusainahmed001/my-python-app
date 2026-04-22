@@ -33,7 +33,7 @@ pipeline {
                             sonar-scanner \
                             -Dsonar.projectKey=demo-app \
                             -Dsonar.sources=. \
-                            -Dsonar.host.url=http://<SONAR_HOST>:9000 \
+                            -Dsonar.host.url=http://10.30.40.102:9000 \
                             -Dsonar.token=$SONAR_TOKEN
                         '''
                     }
