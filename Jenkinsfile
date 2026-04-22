@@ -61,7 +61,8 @@ pipeline {
                     sh '''
                         curl -v -u $NEXUS_USER:$NEXUS_PASS \
                         --upload-file demo-app.zip \
-                        http://<NEXUS_HOST>:8081/repository/my-generic-repo/demo-app/demo-app-${BUILD_NUMBER}.zip
+                        http://$NEXUS_HOST:8081/repository/my-generic-repo/demo-app/demo-app-${BUILD_NUMBER}.zip
+
                     '''
                 }
             }
