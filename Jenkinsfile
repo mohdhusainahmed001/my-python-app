@@ -61,8 +61,7 @@ pipeline {
                     sh '''
                         curl -v -u $NEXUS_USER:$NEXUS_PASS \
                         --upload-file demo-app.zip \
-                         http://10.30.40.102:8081/repository/my-generic-repo/demo-app-37.zip
-
+                        http://10.30.40.102:8081/repository/my-generic-repo/demo-app-${BUILD_NUMBER}.zip
                     '''
                 }
             }
@@ -89,9 +88,15 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Swarm via Ansible') {
             steps {
-                sh 'echo "Deploy stage placeholder - replace with kubectl/helm/ansible commands"'
+                script {
+                    def imageName = "mohdhusainahmed001/my-python-app:${BUILD_NUMBER}"
+                    sh """
+                        ansible-playbook -i inventory.ini deploy.yml \
+                        --extra-vars "build_number=${BUILD_NUMBER} image_name=${imageName}"
+                    """
+                }
             }
         }
     }

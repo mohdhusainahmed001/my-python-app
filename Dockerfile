@@ -3,7 +3,7 @@ FROM python:3.10-bullseye
 # Switch to root
 USER root
 
-# Install required tools including Docker CLI and kubectl
+# Install required tools including Docker CLI, kubectl, and Ansible
 RUN apt-get update && \
     apt-get install -y \
     wget \
@@ -17,6 +17,7 @@ RUN apt-get update && \
     apt-transport-https \
     gnupg \
     lsb-release \
+    ansible \
     && rm -rf /var/lib/apt/lists/*
 
 # Install SonarScanner
