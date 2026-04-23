@@ -3,7 +3,7 @@ FROM python:3.10-bookworm
 # Switch to root
 USER root
 
-# Install required tools including Docker CLI, kubectl, and Ansible
+# Install required tools (if you still need them for CI/CD)
 RUN apt-get update && \
     apt-get install -y \
     wget \
@@ -35,7 +35,7 @@ RUN curl -sSLo /usr/local/bin/kubectl \
 
 # Upgrade pip and install testing tools
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir pytest
+    pip install --no-cache-dir pytest flask
 
 # Pre-install Ansible Docker collection
 RUN ansible-galaxy collection install community.docker
@@ -43,6 +43,15 @@ RUN ansible-galaxy collection install community.docker
 # Set working directory
 WORKDIR /workspace
 
-# Default command
-CMD ["bash"]
+# Copy your Python app into the image
+COPY app.py /workspace/app.py
+# If you have requirements.txt, install dependencies
+COPY requirements.txt /workspace/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose port 5000 for Flask
+EXPOSE 5000
+
+# Default command: run your app
+CMD ["python", "app.py"]
 
